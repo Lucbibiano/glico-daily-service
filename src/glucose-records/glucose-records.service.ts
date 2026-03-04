@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CreateGlucoseRecordDto } from './dto/create-glucose-record.dto';
-import { UpdateGlucoseRecordDto } from './dto/update-glucose-record.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GlucoseRecord } from './entities/glucose-record.entity';
 import { Repository } from 'typeorm';
+import { MeasurementType } from './measurement-type.model';
 
 @Injectable()
 export class GlucoseRecordsService {
@@ -18,6 +18,15 @@ export class GlucoseRecordsService {
         'O payload está inválido, por favor verifique e tente novamente.',
       );
     }
+    if (
+      !Object.values(MeasurementType).includes(
+        createGlucoseRecordDto.measurementType,
+      )
+    ) {
+      throw new Error(
+        'Tipo de medição está incorreto, por favor verifique e tente novamente.',
+      );
+    }
 
     const req = this.glicoseRepository.create({
       value: createGlucoseRecordDto.value,
@@ -30,8 +39,10 @@ export class GlucoseRecordsService {
     return this.glicoseRepository.save(req);
   }
 
-  async findAll() {
-    return this.glicoseRepository.find({ order: { createdAt: 'DESC' } });
+  async findAll(startDate: Date, endDate: Date) {
+    return this.glicoseRepository.find({
+      order: { createdAt: 'DESC' },
+    });
   }
 
   async findOne(id: string) {

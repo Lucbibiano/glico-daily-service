@@ -50,8 +50,8 @@ export class GlucoseRecordsController {
   }
 
   @Get()
-  async findAll() {
-    const rec = await this.glucoseRecordsService.findAll();
+  async findAll(@Param('startDate') startDate: Date, @Param('endDate') endDate: Date) {
+    const rec = await this.glucoseRecordsService.findAll(startDate, endDate);
     if (!rec) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     return rec;
   }

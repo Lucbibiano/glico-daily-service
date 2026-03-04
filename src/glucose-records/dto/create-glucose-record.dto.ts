@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
-import { IsOptional, IsString, Length, Min } from 'class-validator';
+import { IsEnum,  IsOptional, IsString, Length, Min } from 'class-validator';
+import { MeasurementType } from '../measurement-type.model';
 
 export class CreateGlucoseRecordDto {
   @Type(() => Number)
@@ -7,8 +8,8 @@ export class CreateGlucoseRecordDto {
   value: number;
 
   @Length(0, 20)
-  @IsString()
-  measurementType: string;
+  @IsEnum(MeasurementType)
+  measurementType: MeasurementType;
 
   @Length(0, 200)
   @IsString()
