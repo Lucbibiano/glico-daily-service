@@ -7,14 +7,13 @@ import {
   Delete,
   HttpException,
   HttpStatus,
-  ParseIntPipe,
   Put,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { GlucoseRecordsService } from './glucose-records.service';
 import { CreateGlucoseRecordDto } from './dto/create-glucose-record.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('glucose-records')
 @Controller('glucose-records')
 export class GlucoseRecordsController {
   constructor(private readonly glucoseRecordsService: GlucoseRecordsService) {}
@@ -37,7 +36,8 @@ export class GlucoseRecordsController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() dto: Partial<CreateGlucoseRecordDto>) {
+    @Body() dto: Partial<CreateGlucoseRecordDto>,
+  ) {
     try {
       const updated = await this.glucoseRecordsService.update(id, dto);
       return { success: true, data: updated };
@@ -50,7 +50,10 @@ export class GlucoseRecordsController {
   }
 
   @Get()
-  async findAll(@Param('startDate') startDate: Date, @Param('endDate') endDate: Date) {
+  async findAll(
+    @Param('startDate') startDate?: Date,
+    @Param('endDate') endDate?: Date,
+  ) {
     const rec = await this.glucoseRecordsService.findAll(startDate, endDate);
     if (!rec) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     return rec;

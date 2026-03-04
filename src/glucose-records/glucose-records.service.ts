@@ -39,7 +39,7 @@ export class GlucoseRecordsService {
     return this.glicoseRepository.save(req);
   }
 
-  async findAll(startDate: Date, endDate: Date) {
+  async findAll(startDate?: Date, endDate?: Date) {
     return this.glicoseRepository.find({
       order: { createdAt: 'DESC' },
     });
