@@ -1,0 +1,6 @@
+export enum MeasurementType {
+  FASTING = 'FASTING',
+  BEFORE_MEAL = 'BEFORE_MEAL',
+  AFTER_MEAL = 'AFTER_MEAL',
+  BEFORE_SLEEP = 'BEFORE_SLEEP'
+}
