@@ -3,7 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GlucoseRecordsModule } from './glucose-records/glucose-records.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { GlucoseRecord } from './glucose-records/entities/glucose-record.entity';
 
 @Module({
   imports: [
@@ -14,7 +13,7 @@ import { GlucoseRecord } from './glucose-records/entities/glucose-record.entity'
       port: parseInt(process.env.DATABASE_PORT || '5432', 10),
       username: process.env.DATABASE_USER || 'postgres',
       password: process.env.DATABASE_PASSWORD || 'postgres',
-      database: process.env.DATABASE_NAME || 'glicodaily',
+      database: process.env.DATABASE_NAME || 'glicodailydb',
       autoLoadEntities: true,
       synchronize: true,
       extra: {
@@ -22,7 +21,6 @@ import { GlucoseRecord } from './glucose-records/entities/glucose-record.entity'
         max: Number(process.env.DB_POOL_MAX || 10),
       },
     }),
-    TypeOrmModule.forFeature([GlucoseRecord]),
   ],
   controllers: [AppController],
   providers: [AppService],

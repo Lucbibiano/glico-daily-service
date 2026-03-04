@@ -15,7 +15,7 @@ export class GlucoseRecord {
   @Column({ nullable: true })
   note: string;
 
-  @Column()
+  @CreateDateColumn()
   measuredAt: Date;
 
   @CreateDateColumn()

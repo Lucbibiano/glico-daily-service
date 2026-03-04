@@ -7,26 +7,48 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class GlucoseRecordsService {
+  constructor(
+    @InjectRepository(GlucoseRecord)
+    private glicoseRepository: Repository<GlucoseRecord>,
+  ) {}
 
-  constructor(@InjectRepository(GlucoseRecord) private glicoseRepository: Repository<GlucoseRecord>) {}
+  async create(createGlucoseRecordDto: CreateGlucoseRecordDto) {
+    if (!createGlucoseRecordDto) {
+      throw new Error(
+        'O payload está inválido, por favor verifique e tente novamente.',
+      );
+    }
 
-  create(createGlucoseRecordDto: CreateGlucoseRecordDto) {
-    return 'This action adds a new glucoseRecord';
+    const req = this.glicoseRepository.create({
+      value: createGlucoseRecordDto.value,
+      measurementType: createGlucoseRecordDto.measurementType,
+      createdAt: new Date(),
+      note: createGlucoseRecordDto.note,
+      measuredAt: createGlucoseRecordDto.measuredAt,
+    });
+
+    return this.glicoseRepository.save(req);
   }
 
-  findAll() {
-    return `This action returns all glucoseRecords`;
+  async findAll() {
+    return this.glicoseRepository.find({ order: { createdAt: 'DESC' } });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} glucoseRecord`;
+  async findOne(id: string) {
+    return this.glicoseRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateGlucoseRecordDto: UpdateGlucoseRecordDto) {
-    return `This action updates a #${id} glucoseRecord`;
+  async update(id: string, dto: Partial<CreateGlucoseRecordDto>) {
+    const rec = await this.glicoseRepository.findOne({ where: { id } });
+    if (!rec) {
+      throw new Error('Recommendation not found');
+    }
+
+    return this.glicoseRepository.save({ ...rec, ...dto });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} glucoseRecord`;
+  async remove(id: string) {
+    const res = await this.glicoseRepository.delete(id);
+    return res.affected && res.affected > 0;
   }
 }

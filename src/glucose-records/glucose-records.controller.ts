@@ -1,34 +1,72 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  HttpException,
+  HttpStatus,
+  ParseIntPipe,
+  Put,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { GlucoseRecordsService } from './glucose-records.service';
 import { CreateGlucoseRecordDto } from './dto/create-glucose-record.dto';
-import { UpdateGlucoseRecordDto } from './dto/update-glucose-record.dto';
 
 @Controller('glucose-records')
 export class GlucoseRecordsController {
   constructor(private readonly glucoseRecordsService: GlucoseRecordsService) {}
 
   @Post()
-  create(@Body() createGlucoseRecordDto: CreateGlucoseRecordDto) {
-    return this.glucoseRecordsService.create(createGlucoseRecordDto);
+  async create(@Body() createGlucoseRecordDto: CreateGlucoseRecordDto) {
+    try {
+      const saved = await this.glucoseRecordsService.create(
+        createGlucoseRecordDto,
+      );
+      return { success: true, data: saved };
+    } catch (error: any) {
+      throw new HttpException(
+        { success: false, message: error.message },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Put(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() dto: Partial<CreateGlucoseRecordDto>) {
+    try {
+      const updated = await this.glucoseRecordsService.update(id, dto);
+      return { success: true, data: updated };
+    } catch (err: any) {
+      throw new HttpException(
+        { success: false, message: err.message },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   @Get()
-  findAll() {
-    return this.glucoseRecordsService.findAll();
+  async findAll() {
+    const rec = await this.glucoseRecordsService.findAll();
+    if (!rec) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+    return rec;
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.glucoseRecordsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateGlucoseRecordDto: UpdateGlucoseRecordDto) {
-    return this.glucoseRecordsService.update(+id, updateGlucoseRecordDto);
+  async get(@Param('id') id: string) {
+    const rec = await this.glucoseRecordsService.findOne(id);
+    if (!rec) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+    return rec;
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.glucoseRecordsService.remove(+id);
+  async delete(@Param('id') id: string) {
+    const deleted = await this.glucoseRecordsService.remove(id);
+    if (!deleted) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+    return { success: true };
   }
 }
